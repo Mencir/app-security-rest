@@ -33,16 +33,19 @@ public class SecurityConfig {
         return new InMemoryUserDetailsManager(admin, user);
     }
 
-    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().authenticated()
+                        .requestMatchers("/api/v1/security/admin").hasRole("ADMIN")
+                        .requestMatchers("/api/v1/security/user").hasRole("USER")
+                        .requestMatchers("/api/v1/security/hello").authenticated()
+                        .anyRequest().denyAll()
                 )
-                .httpBasic(httpBasic -> {});
+                .httpBasic(httpBasic -> {}); // API moderna Spring Security 6.1
 
         return http.build();
     }
+
 
 }
